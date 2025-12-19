@@ -202,37 +202,6 @@ API ENDPOINTS
      - id: MongoDB ObjectId of the employee (string)
    Response: HTML page confirming deletion
 
-PROJECT STRUCTURE
-================================================================================
-├── src/
-│   ├── app.js                    - Express application configuration
-│   ├── server.js                 - Server entry point
-│   ├── controllers/
-│   │   └── employeesControllers.js - Request handlers and business logic
-│   ├── models/
-│   │   └── employeesModels.js    - Database operations and data models
-│   ├── routes/
-│   │   └── employeesRouter.js    - API route definitions
-│   ├── data/
-│   │   └── connection.js         - MongoDB connection setup
-│   └── views/
-│       ├── pages/                - Individual page templates
-│       │   ├── index.ejs         - Employee list page
-│       │   ├── add.ejs           - Add employee form
-│       │   ├── edit.ejs          - Edit employee form
-│       │   ├── delete.ejs        - Delete confirmation page
-│       │   ├── deleted.ejs       - Deletion success page
-│       │   └── about.ejs         - About page
-│       └── partials/             - Reusable template components
-│           ├── header.ejs        - Page header
-│           └── footer.ejs        - Page footer
-├── public/
-│   ├── css/
-│   │   └── stylesheet.css        - Application styling
-│   └── img/                      - Image assets
-├── package.json                  - Project dependencies and scripts
-└── README.txt                    - This file
-
 DATABASE SCHEMA
 ================================================================================
 Collection: employees

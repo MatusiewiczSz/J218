@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+
+<form method="GET" action="/" style="margin-bottom:10px;">
+    <label for="sort">Sortuj:</label>
+    <select name="sort" id="sort" onchange="this.form.submit();">
+        <option value="">--Brak--</option>
+        <option value="name_asc" <%= sort === 'name_asc' ? 'selected' : '' %>>Imię (rosnąco)</option>
+        <option value="name_desc" <%= sort === 'name_desc' ? 'selected' : '' %>>Imię (malejąco)</option>
+        <option value="surname_asc" <%= sort === 'surname_asc' ? 'selected' : '' %>>Nazwisko (rosnąco)</option>
+        <option value="surname_desc" <%= sort === 'surname_desc' ? 'selected' : '' %>>Nazwisko (malejąco)</option>
+        <option value="yow_asc" <%= sort === 'yow_asc' ? 'selected' : '' %>>Staż (rosnąco)</option>
+        <option value="yow_desc" <%= sort === 'yow_desc' ? 'selected' : '' %>>Staż (malejąco)</option>
+    </select>
+    <noscript><button type="submit">Sortuj</button></noscript>
+</form>
+
+<ul>
+    <% employees.forEach(employee => { %>
+        <li>
+            <b><%= employee.Name %> <%= employee.Surname %></b> - <%= employee.title %>
+            <p><%= employee.description %></p>
+            <a href="/edit/<%= employee._id %>"> Edytuj</a>
+            <form action="/delete/<%= employee._id %>" method="POST" style="display:inline;">
+                <button type="submit" id="fire"> ZWOLNIJ</button>
+            </form>
+        </li>
+    <% }) %>
+</ul>
+
+<img src="/img/mainpageimg.png" id="mainpageimg">
+
+<%- include('../partials/footer') %>

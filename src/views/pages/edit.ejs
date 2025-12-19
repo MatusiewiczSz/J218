@@ -1,0 +1,19 @@
+<%- include('../partials/header') %>
+
+<% if (employee) { %>
+<h2>Edytuj dane pracownika</h2>
+<form action="/edit/<%= employee._id %>" method="POST">
+    <input type="text" name="Name" value="<%= employee.Name %>" required><br>
+    <input type="text" name="Surname" value="<%= employee.Surname %>" required><br>
+    <input type="text" name="title" value="<%= employee.title %>" required><br>
+    <textarea name="description"><%= employee.description %></textarea><br>
+    <input type="number" name="yow" value="<%= employee.yow %>" required><br>
+    <button type="submit">Zapisz zmiany</button>
+</form>
+<% } else { %>
+<p>Pracownik nie znaleziony</p>
+<% } %>
+
+<img src="/img/employeespageimg.png">
+
+<%- include('../partials/footer') %>

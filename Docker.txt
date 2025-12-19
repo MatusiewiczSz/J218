@@ -1,0 +1,804 @@
+================================================================================
+                    RUNNING MONGODB WITH DOCKER
+                 Comprehensive Docker Setup Instructions
+================================================================================
+
+PREREQUISITES
+================================================================================
+- Docker installed on your system
+  (Download from: https://www.docker.com/products/docker-desktop)
+- Docker Desktop running (on Windows/Mac)
+- Docker daemon running (on Linux)
+- Administrative/sudo privileges if needed
+- Terminal/Command Prompt access
+
+For Docker installation help, visit: https://docs.docker.com/get-docker/
+
+
+QUICK START - BASIC MONGODB CONTAINER
+================================================================================
+Run this command to quickly start MongoDB in Docker:
+
+  docker run -d --name mongodb -p 27017:27017 mongo:latest
+
+This starts:
+  - A new MongoDB container named "mongodb"
+  - Running in the background (-d flag)
+  - Accessible on localhost:27017
+  - Using the latest MongoDB image
+
+Connection String:
+  mongodb://localhost:27017
+
+
+OPTION 1: BASIC CONFIGURATION
+================================================================================
+Command:
+  docker run -d --name mongodb -p 27017:27017 mongo:latest
+
+Breakdown:
+  - docker run: Creates and runs a new Docker container
+  - -d: Detached mode (runs in background)
+  - --name mongodb: Names the container "mongodb"
+  - -p 27017:27017: Port mapping (host:container)
+  - mongo:latest: Uses the latest MongoDB image
+
+Port Information:
+  - Container Port: 27017 (MongoDB default port inside container)
+  - Host Port: 27017 (Port accessible from your machine)
+  - Access via: localhost:27017 or 127.0.0.1:27017
+
+Connection String:
+  mongodb://localhost:27017
+
+Authentication:
+  - Username: None (no authentication)
+  - Password: None (no authentication)
+  - Access: Direct connection without credentials
+
+Best For:
+  - Development/Testing environments
+  - Local development only
+  - Quick prototyping
+
+
+OPTION 2: WITH AUTHENTICATION (RECOMMENDED)
+================================================================================
+Command:
+  docker run -d \
+    --name mongodb \
+    -p 27017:27017 \
+    -e MONGO_INITDB_ROOT_USERNAME=admin \
+    -e MONGO_INITDB_ROOT_PASSWORD=password \
+    mongo:latest
+
+Breakdown:
+  - -e MONGO_INITDB_ROOT_USERNAME=admin: Sets root username
+  - -e MONGO_INITDB_ROOT_PASSWORD=password: Sets root password
+
+Port Information:
+  - Container Port: 27017
+  - Host Port: 27017
+  - Access via: localhost:27017
+
+Login Credentials (Default Example):
+  - Username: admin
+  - Password: password
+
+Connection Strings:
+  Without database specified:
+    mongodb://admin:password@localhost:27017
+  
+  With employees database:
+    mongodb://admin:password@localhost:27017/employees
+
+⚠️  IMPORTANT SECURITY NOTICE:
+  The default password "password" is insecure!
+  Change credentials to something strong:
+  
+  -e MONGO_INITDB_ROOT_USERNAME=myuser \
+  -e MONGO_INITDB_ROOT_PASSWORD=MySecurePassword123!@#
+
+Best For:
+  - Staging environments
+  - Production use
+  - Protected access
+
+
+OPTION 3: WITH VOLUME PERSISTENCE
+================================================================================
+Command:
+  docker run -d \
+    --name mongodb \
+    -p 27017:27017 \
+    -v mongodb_data:/data/db \
+    mongo:latest
+
+Breakdown:
+  - -v mongodb_data:/data/db: Creates persistent volume
+    • mongodb_data: Volume name
+    • /data/db: Container path for MongoDB data
+
+Volume Information:
+  - Volume Name: mongodb_data
+  - Container Path: /data/db (where MongoDB stores data)
+  - Host Path: Managed by Docker (location varies by OS)
+  - Persistence: Data survives container stop/removal
+
+What Gets Persisted:
+  - All databases and collections
+  - User data and indexes
+  - Configuration
+
+Benefits:
+  - Data survives container stop/restart
+  - Faster container restarts
+  - Easy backup and migration
+
+Best For:
+  - Any persistent environment
+  - Long-running databases
+  - Development with data preservation
+
+
+OPTION 4: PRODUCTION-READY SETUP (RECOMMENDED)
+================================================================================
+Command:
+  docker run -d \
+    --name mongodb \
+    -p 27017:27017 \
+    -e MONGO_INITDB_ROOT_USERNAME=admin \
+    -e MONGO_INITDB_ROOT_PASSWORD=MySecurePassword123 \
+    -e MONGO_INITDB_DATABASE=employees \
+    -v mongodb_data:/data/db \
+    --restart always \
+    mongo:latest
+
+Breakdown of Flags:
+  
+  -p 27017:27017
+    Maps port 27017 on host to 27017 in container
+  
+  -e MONGO_INITDB_ROOT_USERNAME=admin
+    Sets root username to "admin"
+  
+  -e MONGO_INITDB_ROOT_PASSWORD=MySecurePassword123
+    Sets root password (CHANGE THIS!)
+  
+  -e MONGO_INITDB_DATABASE=employees
+    Creates "employees" database on startup
+  
+  -v mongodb_data:/data/db
+    Creates persistent volume for data
+  
+  --restart always
+    Automatically restarts container on:
+      - System reboot
+      - Docker daemon restart
+      - Container crashes
+
+Port Configuration:
+  - Container Port: 27017
+  - Host Port: 27017
+  - Access: localhost:27017
+
+Login Credentials:
+  - Username: admin
+  - Password: MySecurePassword123
+  - Root Database: admin (for authentication)
+
+Connection Strings:
+  Direct connection:
+    mongodb://admin:MySecurePassword123@localhost:27017
+  
+  Specify employees database:
+    mongodb://admin:MySecurePassword123@localhost:27017/employees
+  
+  Specify authentication database:
+    mongodb://admin:MySecurePassword123@localhost:27017?authSource=admin
+
+Features:
+  ✓ Authentication enabled (secure)
+  ✓ Data persistence (survives restarts)
+  ✓ Auto-restart enabled (high availability)
+  ✓ Pre-created employees database
+  ✓ Suitable for production
+
+Best For:
+  - Production environments
+  - Important data
+  - Continuous availability
+
+
+CUSTOM SETUP WITH ALL OPTIONS
+================================================================================
+For maximum customization:
+
+  docker run -d \
+    --name mongodb_custom \
+    --hostname mongodb_host \
+    -p 27017:27017 \
+    -p 27018:27018 \
+    -e MONGO_INITDB_ROOT_USERNAME=admin \
+    -e MONGO_INITDB_ROOT_PASSWORD=SecurePass@123 \
+    -e MONGO_INITDB_DATABASE=employees \
+    -v mongodb_data:/data/db \
+    -v mongodb_config:/data/configdb \
+    -e MONGO_INITDB_ROOT_DATABASE=admin \
+    --restart unless-stopped \
+    --memory 512m \
+    --cpus 1.5 \
+    mongo:latest
+
+Advanced Options Explained:
+  
+  --hostname mongodb_host
+    Sets container hostname for network communication
+  
+  -p 27018:27018
+    Additional port mapping (optional, for replica sets)
+  
+  -v mongodb_config:/data/configdb
+    Persistent volume for MongoDB configuration
+  
+  -e MONGO_INITDB_ROOT_DATABASE=admin
+    Specifies which database has root user
+  
+  --restart unless-stopped
+    Restarts unless explicitly stopped
+  
+  --memory 512m
+    Limits memory usage to 512MB
+  
+  --cpus 1.5
+    Limits CPU usage to 1.5 cores
+
+
+UPDATING CONNECTION STRING IN APPLICATION
+================================================================================
+File: src/data/connection.js
+
+For Local MongoDB (No Docker):
+  const uri = 'mongodb://localhost:27017';
+
+For Docker - No Authentication:
+  const uri = 'mongodb://localhost:27017';
+
+For Docker - With Authentication:
+  const uri = 'mongodb://admin:password@localhost:27017';
+
+For Docker - With Authentication and Database:
+  const uri = 'mongodb://admin:password@localhost:27017/employees';
+
+Example with Full Path:
+  const uri = 'mongodb://admin:MySecurePassword123@localhost:27017/employees?authSource=admin';
+
+Complete Example (src/data/connection.js):
+  
+  const { MongoClient } = require('mongodb');
+  
+  const uri = 'mongodb://admin:MySecurePassword123@localhost:27017';
+  const client = new MongoClient(uri);
+  
+  let db;
+  
+  async function connectDB() {
+      try {
+          await client.connect();
+          db = client.db('employees');
+          console.log('✓ Connected to MongoDB via Docker');
+      } catch (err) {
+          console.error('✗ MongoDB Connection Error:', err);
+      }
+  }
+  
+  function getDB() {
+      if (!db) throw new Error('Database not connected!');
+      return db;
+  }
+  
+  module.exports = { connectDB, getDB };
+
+
+DOCKER COMMANDS FOR MONGODB MANAGEMENT
+================================================================================
+
+View Running Containers:
+  docker ps
+  
+Output shows: Container ID, Image, Status, Ports, Names
+
+View All Containers (including stopped):
+  docker ps -a
+
+View MongoDB Container Logs:
+  docker logs mongodb
+  
+  Shows initialization messages, connection info, errors
+  Useful for: Debugging, verifying startup
+
+Follow Logs in Real-time:
+  docker logs -f mongodb
+  
+  Streams new log entries as they happen
+  Press Ctrl+C to exit
+
+Stop MongoDB Container:
+  docker stop mongodb
+  
+  Gracefully stops the container
+  Data is preserved (if using volumes)
+
+Start Stopped Container:
+  docker start mongodb
+  
+  Restarts a previously stopped container
+  Reconnects to same volume
+
+Restart Container:
+  docker restart mongodb
+  
+  Stops and starts the container
+  Useful for: Applying changes, troubleshooting
+
+Remove Container (Destructive):
+  docker rm mongodb
+  
+  ⚠️  Deletes the container
+  Note: If using volumes, data is preserved
+
+Access MongoDB Shell Inside Container:
+  Modern MongoDB (v4.4+):
+    docker exec -it mongodb mongosh
+  
+  Older MongoDB versions:
+    docker exec -it mongodb mongo
+
+  Inside the shell:
+    show dbs                 # List databases
+    use employees           # Switch to employees database
+    db.employees.find()     # List all employees
+    exit                    # Exit MongoDB shell
+
+View Container Details:
+  docker inspect mongodb
+  
+  Shows: Configuration, volumes, networking, environment variables
+
+Check Container Resource Usage:
+  docker stats mongodb
+  
+  Shows: CPU %, Memory, Network I/O, Block I/O
+
+View Container Processes:
+  docker top mongodb
+  
+  Shows processes running inside container
+
+Remove MongoDB Image:
+  docker rmi mongo:latest
+  
+  ⚠️  This only removes the image, not containers
+
+List All Docker Volumes:
+  docker volume ls
+  
+  Shows all volumes including "mongodb_data"
+
+Inspect Volume Details:
+  docker volume inspect mongodb_data
+  
+  Shows: Driver, Mountpoint, Labels, Scope
+
+Remove Volume (Destructive):
+  docker volume rm mongodb_data
+  
+  ⚠️  This permanently deletes data if no backups exist
+
+View Network:
+  docker network inspect bridge
+  
+  Shows all containers on default network
+
+Export Container Logs:
+  docker logs mongodb > mongodb_logs.txt
+  
+  Saves logs to file for analysis
+
+
+VERIFYING MONGODB IS RUNNING
+================================================================================
+
+Method 1: Check Container Status
+  docker ps | grep mongodb
+  
+  Expected: Container listed with status "Up X minutes"
+  If nothing appears: Container not running
+
+Method 2: Check Full Container Status
+  docker ps -a
+  
+  Look for mongodb in the list
+  Status should show "Up" (not "Exited")
+
+Method 3: Check Container Logs
+  docker logs mongodb
+  
+  Look for messages like:
+    "waiting for connections on port 27017"
+    "MongoDB init process complete"
+  
+  Warnings are OK, errors indicate problems
+
+Method 4: Test Connection from Command Line
+  
+  Windows (PowerShell):
+    Test-NetConnection -ComputerName localhost -Port 27017
+    
+    Expected: 
+      "RemoteAddress  : ::1"
+      "TcpTestSucceeded : True"
+  
+  Mac/Linux (Terminal):
+    nc -zv localhost 27017
+    
+    Expected:
+      "Connection to localhost port 27017 [tcp/*] succeeded!"
+  
+  Using telnet (all platforms):
+    telnet localhost 27017
+
+Method 5: Connect with MongoDB Shell
+  Without Authentication:
+    mongosh mongodb://localhost:27017
+  
+  With Authentication:
+    mongosh mongodb://admin:password@localhost:27017
+  
+  Expected: Connected to MongoDB, can run commands
+  
+  Test commands:
+    show dbs
+    use admin
+    db.adminCommand('ping')
+
+Method 6: Check Docker Stats
+  docker stats mongodb
+  
+  Shows live CPU, Memory, Network usage
+  If nothing shows: Container not running
+
+All Verification Steps in One Check Script:
+
+  Windows (create check_mongo.ps1):
+    Write-Host "Checking Docker container..."
+    docker ps | grep mongodb
+    
+    Write-Host "`nChecking network connection..."
+    Test-NetConnection -ComputerName localhost -Port 27017
+    
+    Write-Host "`nChecking logs..."
+    docker logs mongodb | tail -20
+
+  Mac/Linux (create check_mongo.sh):
+    #!/bin/bash
+    echo "Checking Docker container..."
+    docker ps | grep mongodb
+    
+    echo ""
+    echo "Checking network connection..."
+    nc -zv localhost 27017
+    
+    echo ""
+    echo "Checking logs..."
+    docker logs mongodb | tail -20
+
+
+TROUBLESHOOTING DOCKER
+================================================================================
+
+Error: "Port 27017 is already in use"
+  Problem: Another process is using the port
+  
+  Solution 1: Use different port
+    docker run -d --name mongodb -p 27018:27017 mongo:latest
+    Connect via: mongodb://localhost:27018
+  
+  Solution 2: Stop conflicting container
+    docker ps | grep 27017
+    docker stop <container_name>
+  
+  Solution 3: Find and kill process using port
+    Windows (PowerShell):
+      Get-Process -Id (Get-NetTCPConnection -LocalPort 27017).OwningProcess
+      Stop-Process -Id <PID> -Force
+    
+    Mac/Linux:
+      lsof -i :27017
+      kill <PID>
+
+Error: "Container name already in use"
+  Problem: Container with same name exists
+  
+  Solution:
+    docker rm mongodb
+    # Then run docker run command again
+
+Error: "Docker daemon is not running"
+  Problem: Docker service/application not started
+  
+  Solution:
+    Windows: Start Docker Desktop
+    Mac: Start Docker Desktop
+    Linux: sudo systemctl start docker
+
+Error: "Cannot connect to MongoDB (Connection refused)"
+  Problem: Container not running or wrong port
+  
+  Solutions:
+    1. Check if container is running:
+       docker ps
+    
+    2. View logs for errors:
+       docker logs mongodb
+    
+    3. Restart container:
+       docker restart mongodb
+    
+    4. Verify connection string in code:
+       Check src/data/connection.js
+
+Error: "Authentication failed"
+  Problem: Wrong username/password or settings
+  
+  Solutions:
+    1. Verify credentials match docker run -e values
+    
+    2. Check connection string format:
+       mongodb://username:password@localhost:27017
+    
+    3. Remove and recreate container with correct credentials:
+       docker stop mongodb
+       docker rm mongodb
+       docker run -d --name mongodb -p 27017:27017 \
+         -e MONGO_INITDB_ROOT_USERNAME=admin \
+         -e MONGO_INITDB_ROOT_PASSWORD=newpassword \
+         mongo:latest
+
+Error: "Container keeps restarting"
+  Problem: Something is causing container to crash
+  
+  Solutions:
+    1. Check logs for errors:
+       docker logs mongodb
+    
+    2. Verify volume is accessible:
+       docker volume ls
+       docker volume inspect mongodb_data
+    
+    3. Check system resources:
+       docker stats mongodb
+    
+    4. Restart with less resource limits
+
+Error: "Cannot write to volume"
+  Problem: Permission issues with volume
+  
+  Solutions:
+    Windows: Usually no issues
+    Mac/Linux: Check permissions
+      docker inspect mongodb_data
+      # Check Mountpoint path permissions
+
+Error: "Volume not found"
+  Problem: Named volume was deleted or corrupted
+  
+  Solutions:
+    1. Recreate volume:
+       docker volume create mongodb_data
+    
+    2. Run container again:
+       docker run -d --name mongodb -p 27017:27017 \
+         -v mongodb_data:/data/db mongo:latest
+
+Error: "MongoDB not responding after startup"
+  Problem: Initialization taking longer, or error
+  
+  Solutions:
+    1. Wait longer (can take 10-30 seconds)
+    
+    2. Check logs:
+       docker logs -f mongodb
+    
+    3. Check system resources:
+       docker stats
+    
+    4. Try accessing admin database:
+       mongosh mongodb://localhost:27017/admin
+
+
+DOCKER COMPOSE SETUP (ALTERNATIVE METHOD)
+================================================================================
+Create a file named "docker-compose.yml" in project root:
+
+---
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: employees
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
+
+---
+
+Start with Docker Compose:
+  docker-compose up -d
+
+Stop with Docker Compose:
+  docker-compose down
+
+View logs:
+  docker-compose logs -f mongodb
+
+This is cleaner and more maintainable for complex setups!
+
+
+BEST PRACTICES
+================================================================================
+
+Security:
+  ✓ Always use authentication in production
+  ✓ Use strong passwords (min 12 characters)
+  ✓ Change default username from "admin"
+  ✓ Use environment variables for secrets
+  ✓ Don't hardcode credentials in code
+  ✓ Use --restart unless-stopped, not always
+
+Data Management:
+  ✓ Always use volumes for persistence
+  ✓ Regularly backup volumes
+  ✓ Test restore procedures
+  ✓ Keep separate volumes for different purposes
+
+Resource Management:
+  ✓ Set memory limits (--memory flag)
+  ✓ Set CPU limits (--cpus flag)
+  ✓ Monitor container stats regularly
+  ✓ Clean up unused images/volumes
+
+Networking:
+  ✓ Use container names for DNS resolution
+  ✓ Create custom networks for multi-container setups
+  ✓ Expose only necessary ports
+  ✓ Use proper port mapping
+
+Logging & Monitoring:
+  ✓ Regularly check logs for errors
+  ✓ Archive logs for compliance
+  ✓ Set up log rotation if running long-term
+  ✓ Monitor resource usage
+
+Development Workflow:
+  ✓ Use Docker Compose for consistent environments
+  ✓ Document your Docker setup
+  ✓ Version control docker-compose.yml
+  ✓ Test all container scenarios
+
+
+USEFUL DOCKER IMAGES
+================================================================================
+
+MongoDB Official:
+  mongo:latest            - Latest version
+  mongo:7.0               - Specific version
+  mongo:7.0-alpine        - Lightweight version
+  mongo:7.0-ubuntu        - Full-featured Ubuntu base
+
+Choose based on needs:
+  - latest: Always current, larger image
+  - specific version: Stability and compatibility
+  - alpine: Minimal, fastest startup, less storage
+  - ubuntu: More tools, easier debugging
+
+
+QUICK REFERENCE COMMANDS
+================================================================================
+
+Start MongoDB:
+  docker run -d --name mongodb -p 27017:27017 mongo:latest
+
+Start with Authentication:
+  docker run -d --name mongodb -p 27017:27017 \
+    -e MONGO_INITDB_ROOT_USERNAME=admin \
+    -e MONGO_INITDB_ROOT_PASSWORD=password \
+    mongo:latest
+
+Start with Persistence:
+  docker run -d --name mongodb -p 27017:27017 \
+    -v mongodb_data:/data/db \
+    mongo:latest
+
+View Status:
+  docker ps | grep mongodb
+
+View Logs:
+  docker logs mongodb
+
+Connect via Shell:
+  mongosh mongodb://localhost:27017
+
+Connect Authenticated:
+  mongosh mongodb://admin:password@localhost:27017
+
+Stop:
+  docker stop mongodb
+
+Remove:
+  docker rm mongodb
+
+Clean Everything:
+  docker stop mongodb && docker rm mongodb && docker volume rm mongodb_data
+
+
+TESTING YOUR SETUP
+================================================================================
+
+1. Start MongoDB container
+2. Verify it's running: docker ps
+3. Test connection: mongosh mongodb://localhost:27017
+4. Create test database: use test_db
+5. Insert test document: db.test.insertOne({name: "test"})
+6. Query document: db.test.findOne()
+7. Delete test database: db.dropDatabase()
+8. Stop container: docker stop mongodb
+9. Start again: docker start mongodb
+10. Verify persistence and auto-restart
+
+If all steps succeed, Docker setup is working correctly!
+
+
+ADDITIONAL RESOURCES
+================================================================================
+
+MongoDB Docker Documentation:
+  https://hub.docker.com/_/mongo
+
+MongoDB Official:
+  https://www.mongodb.com/
+
+Docker Documentation:
+  https://docs.docker.com/
+
+Docker Compose:
+  https://docs.docker.com/compose/
+
+MongoDB Shell (mongosh):
+  https://www.mongodb.com/docs/mongodb-shell/
+
+Community Support:
+  https://www.mongodb.com/community/forums/
+  https://stackoverflow.com/questions/tagged/docker+mongodb
+
+================================================================================
+End of Docker Setup Guide
+For questions or issues, consult Docker and MongoDB official documentation
+================================================================================

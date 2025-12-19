@@ -1,0 +1,15 @@
+<%- include('../partials/header') %>
+
+<h2>Dodaj pracownika (ODRADZANE)</h2>
+<form action="/add" method="POST">
+    <input type="text" name="Name" placeholder="Imię" maxlength="30" pattern="[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s]+" required><br>
+    <input type="text" name="Surname" placeholder="Nazwisko" maxlength="30" pattern="[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s]+" required><br>
+    <input type="text" name="title" placeholder="Pozycja" maxlength="30" pattern="[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s]+" required><br>
+    <input type="number" name="yow" placeholder="Staż" min="0" max="99" required><br>
+    <textarea name="description" placeholder="Treść" maxlength="300"></textarea><br>
+    <button type="submit">Zapisz</button>
+</form>
+
+<img src="/img/hiringpageimg.png" id="hiringpageimg">
+
+<%- include('../partials/footer') %>

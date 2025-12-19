@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "mongodb": "^7.0.0",
+    "start": "^5.1.0"
+  },
+  "name": "hr-pro-max",
+  "version": "1.0.0",
+  "description": "simple HR employee management application with CRUD functionality",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "keywords": ["hr", "employees", "management", "employee management",
+  "CRUD", "workforce database", "management application", "data management",
+  "employee records", "workforce management", "personnel management"],
+  "author": "Matusiewicz Szymon",
+  "license": "ISC"
+}

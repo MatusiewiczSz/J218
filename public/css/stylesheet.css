@@ -1,0 +1,80 @@
+.geom-font {
+  font-family: "Geom", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+*
+{
+    text-decoration: none;
+    font-family: "Geom";
+}
+
+body
+{
+    background-color: #cfeded;
+    text-align: center;
+    border-top: none;
+    margin: 0;
+    padding: 0;
+}
+
+a
+{
+    color: #EA3956;
+    text-decoration: none;
+}
+
+header
+{
+    margin-top: -1.5%;
+    background-color: #38a6a6;
+    text-align: center;
+    border-bottom: none;
+}
+
+#fire
+{
+    border-color: #EA3956;
+    border-width: 5px;
+    border-radius: 0;
+    background-image: url("/img/fire.png");
+    color: #E4EC61;
+    font-size: x-large;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 700;
+}
+
+img
+{
+    width: 30%;
+    height: 10%;
+    margin-left: 70%;
+    padding-bottom: -1%;
+}
+
+li
+{
+    list-style-type: none;
+    margin-right: 20px;
+    font-size: large;
+    padding-bottom: 5px;
+    margin-left: 40%;
+    margin-right: 40%;
+    border-bottom: 2px solid black;
+}
+
+#deletepageimg
+{
+    margin-left: 0%;
+    margin-right: 0%;
+    height: 15%;
+    width: 15%;
+}
+
+#hiringpageimg
+{
+    height: 20%;
+    width: 20%
+}
